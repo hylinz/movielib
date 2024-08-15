@@ -14,6 +14,13 @@ namespace MovieLibrary.Repositories
             return await context.Actors.AsNoTracking().FirstOrDefaultAsync(actor => actor.Id == id);
         }
 
+        public async Task<List<Actor>> GetByName(string name)
+        {
+            return await context.Actors
+                .Where(actor => actor.Name.Contains(name))
+                .OrderBy(actor => actor.Name).ToListAsync();
+        }
+
         public async Task<int> Create(Actor actor)
         {
             context.Add(actor);

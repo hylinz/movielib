@@ -2,6 +2,7 @@ using MovieLibrary;
 using MovieLibrary.Repositories;
 using Microsoft.EntityFrameworkCore;
 using MovieLibrary.Endpoints;
+using MovieLibrary.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -29,6 +30,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IGenresRepository, GenresRepository>();
 builder.Services.AddScoped<IActorsRepository, ActorsRepository>();
+
+builder.Services.AddTransient<IFileStorage, AzureFileStorage>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 //
