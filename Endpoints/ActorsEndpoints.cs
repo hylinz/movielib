@@ -15,13 +15,13 @@ namespace MovieLibrary.Endpoints
         private readonly static string container = "actors";
         public static RouteGroupBuilder MapActors(this RouteGroupBuilder group)
         {
-            group.MapGet("/", GetAll)
-                .CacheOutput(c => c.Expire(TimeSpan.FromMinutes(1)).Tag("actors-get"));
-            group.MapGet("getByName/{name}", GetByName)
-     .CacheOutput(c => c.Expire(TimeSpan.FromMinutes(1)).Tag("actors-get"));
-            group.MapGet("/{id:int}", GetById);
+            group.MapGet("/", GetAll).CacheOutput(c => c.Expire(TimeSpan.FromMinutes(1)).Tag("actors-get"));
+            group.MapGet("getByName/{name}", GetByName).CacheOutput(c => c.Expire(TimeSpan.FromMinutes(1)).Tag("actors-get"));
+            group.MapGet("/{id:int}", GetById).CacheOutput(c => c.Expire(TimeSpan.FromMinutes(1)).Tag("actors-get"));
             group.MapPost("/", Create).DisableAntiforgery();
             group.MapPut("/{id:int}", Update).DisableAntiforgery();
+            group.MapDelete("/{id:int}", Delete).DisableAntiforgery();
+
             return group;
         }
 
@@ -92,6 +92,20 @@ namespace MovieLibrary.Endpoints
             return TypedResults.NoContent();
 
 
+        }
+
+        static async Task<Results<NoContent, NotFound>> Delete(int id, IActorsRepository repository, IOutputCacheStore outputCacheStore, IFileStorage fileStorage)
+        {
+            var actorDB = await repository.GetById(id);
+            if (actorDB is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            await repository.Delete(id);
+            await fileStorage.Delete(actorDB.Picture, container);
+            await outputCacheStore.EvictByTagAsync("actors-get", default);
+            return TypedResults.NoContent();
         }
     }
 }
