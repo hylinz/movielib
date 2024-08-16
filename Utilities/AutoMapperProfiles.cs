@@ -16,6 +16,8 @@ namespace MovieLibrary.Utilities
             CreateMap<Movie, MovieDTO>();
             CreateMap<CreateMovieDTO, Movie>()
                 .ForMember(property => property.Poster, options => options.Ignore());
+            CreateMap<Comment, CommentDTO>();
+            CreateMap<CreateCommentDTO, Comment>();
 
         }
     }

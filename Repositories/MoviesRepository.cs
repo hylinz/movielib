@@ -14,7 +14,9 @@ namespace MovieLibrary.Repositories
         }
         public async Task<Movie?> GetById(int id)
         {
-            return await context.Movies.AsNoTracking().FirstOrDefaultAsync(movie => movie.Id == id);
+            return await context.Movies.AsNoTracking()
+                .Include(movie => movie.Comments)
+                .FirstOrDefaultAsync(movie => movie.Id == id);
         }
 
         public async Task<bool> Exist(int id)
