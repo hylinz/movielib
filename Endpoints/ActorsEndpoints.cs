@@ -24,16 +24,19 @@ namespace MovieLibrary.Endpoints
             return group;
         }
 
-        static async Task<Ok<List<ActorDTO>>> GetAll(IActorsRepository repository, IMapper mapper)
+        static async Task<Ok<List<ActorDTO>>> GetAll(IActorsRepository repository, IMapper mapper, int page = 1, int recordsPerPage = 10)
         {
-            var actors = await repository.GetAll();
+            var pagination = new PaginationDTO { Page = page, RecordsPerPage = recordsPerPage };
+            var actors = await repository.GetAll(pagination);
             var actorsDTO = mapper.Map<List<ActorDTO>>(actors);
             return TypedResults.Ok(actorsDTO);
         }
 
-        static async Task<Ok<List<ActorDTO>>> GetByName(string name, IActorsRepository repository, IMapper mapper)
+        static async Task<Ok<List<ActorDTO>>> GetByName(string name, IActorsRepository repository, IMapper mapper, int page = 1, int recordsPerPage = 10)
         {
-            var actors = await repository.GetByName(name);
+            var pagination = new PaginationDTO { Page = page, RecordsPerPage = recordsPerPage };
+
+            var actors = await repository.GetByName(name, pagination);
             var actorsDTO = mapper.Map<List<ActorDTO>>(actors);
             return TypedResults.Ok(actorsDTO);
         }

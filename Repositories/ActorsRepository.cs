@@ -1,24 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MovieLibrary.DTOs;
 using MovieLibrary.Entities;
 
 namespace MovieLibrary.Repositories
 {
-    public class ActorsRepository(ApplicationDbContext context) : IActorsRepository
+    public class ActorsRepository(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor) : IActorsRepository
     {
-        public async Task<List<Actor>> GetAll()
+        public async Task<List<Actor>> GetAll(PaginationDTO pagination)
         {
-            return await context.Actors.OrderBy(actor => actor.Name).ToListAsync();
+            var queryable = context.Actors.AsQueryable();
+            await httpContextAccessor.HttpContext!.InsertPaginationParameterInResponseHeader(queryable);
+            return await queryable.OrderBy(actor => actor.Name).Paginate(pagination).ToListAsync();
         }
         public async Task<Actor?> GetById(int id)
         {
             return await context.Actors.AsNoTracking().FirstOrDefaultAsync(actor => actor.Id == id);
         }
 
-        public async Task<List<Actor>> GetByName(string name)
+        public async Task<List<Actor>> GetByName(string name, PaginationDTO pagination)
         {
-            return await context.Actors
+            var queryable = context.Actors.AsQueryable();
+            await httpContextAccessor.HttpContext!.InsertPaginationParameterInResponseHeader(queryable);
+            return await queryable
                 .Where(actor => actor.Name.Contains(name))
-                .OrderBy(actor => actor.Name).ToListAsync();
+                .OrderBy(actor => actor.Name)
+                .Paginate(pagination)
+                .ToListAsync();
         }
 
         public async Task<int> Create(Actor actor)
