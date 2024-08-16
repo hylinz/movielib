@@ -21,6 +21,7 @@ namespace MovieLibrary.Endpoints
      .CacheOutput(c => c.Expire(TimeSpan.FromMinutes(1)).Tag("actors-get"));
             group.MapGet("/{id:int}", GetById);
             group.MapPost("/", Create).DisableAntiforgery();
+            group.MapPut("/{id:int}", Update).DisableAntiforgery();
             return group;
         }
 
@@ -66,6 +67,31 @@ namespace MovieLibrary.Endpoints
             await outputCacheStore.EvictByTagAsync("actor-get", default);
             var actorDTO = mapper.Map<ActorDTO>(actor);
             return TypedResults.Created($"/actors/{id}", actorDTO);
+        }
+
+        static async Task<Results<NoContent, NotFound>> Update(int id, [FromForm] CreateActorDTO createActorDTO, IActorsRepository repository, IFileStorage fileStorage, IOutputCacheStore outputCacheStore, IMapper mapper)
+        {
+            var actorDB = await repository.GetById(id);
+            if (actorDB is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var actorsForUpdate = mapper.Map<Actor>(createActorDTO);
+            actorsForUpdate.Id = id;
+            actorsForUpdate.Picture = actorDB.Picture;
+
+            if (createActorDTO.Picture is not null)
+            {
+                var url = await fileStorage.Edit(actorsForUpdate.Picture, container, createActorDTO.Picture);
+                actorsForUpdate.Picture = url;
+            }
+
+            await repository.Update(actorsForUpdate);
+            await outputCacheStore.EvictByTagAsync("actors-get", default);
+            return TypedResults.NoContent();
+
+
         }
     }
 }
