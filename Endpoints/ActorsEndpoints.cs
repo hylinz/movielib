@@ -13,6 +13,7 @@ namespace MovieLibrary.Endpoints
     public static class ActorsEndpoints
     {
         private readonly static string container = "actors";
+
         public static RouteGroupBuilder MapActors(this RouteGroupBuilder group)
         {
             group.MapGet("/", GetAll).CacheOutput(c => c.Expire(TimeSpan.FromMinutes(1)).Tag("actors-get"));

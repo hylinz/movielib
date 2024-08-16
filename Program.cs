@@ -30,7 +30,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IGenresRepository, GenresRepository>();
 builder.Services.AddScoped<IActorsRepository, ActorsRepository>();
-
+builder.Services.AddScoped<IMoviesRepository, MoviesRepository>();
 builder.Services.AddTransient<IFileStorage, AzureFileStorage>();
 builder.Services.AddHttpContextAccessor();
 
@@ -59,6 +59,7 @@ app.MapGet("/", () => "Hello world");
 
 app.MapGroup("/genres").MapGenres();
 app.MapGroup("/actors").MapActors();
+app.MapGroup("/movies").MapMovies();
 
 
 

@@ -13,6 +13,10 @@ namespace MovieLibrary.Utilities
             CreateMap<Actor, ActorDTO>();
             CreateMap<CreateActorDTO, Actor>()
                 .ForMember(property => property.Picture, options => options.Ignore());
+            CreateMap<Movie, MovieDTO>();
+            CreateMap<CreateMovieDTO, Movie>()
+                .ForMember(property => property.Poster, options => options.Ignore());
+
         }
     }
 }
