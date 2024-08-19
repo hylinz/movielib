@@ -39,6 +39,12 @@ namespace MovieLibrary.Repositories
         {
             return await context.Actors.AnyAsync(actor => actor.Id == id);
         }
+
+        public async Task<List<int>> Exists(List<int> ids)
+        {
+            return await context.Actors.Where(actor => ids.Contains(actor.Id)).Select(actor => actor.Id).ToListAsync();
+        }
+
         public async Task Update(Actor actor)
         {
             context.Update(actor);

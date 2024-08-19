@@ -57,5 +57,26 @@ namespace MovieLibrary.Repositories
             await context.SaveChangesAsync();
 
         }
+
+        public async Task Assign(int id, List<ActorMovie> actors)
+        {
+            for (int i = 1; i <= actors.Count; i++)
+            {
+                actors[i - 1].Order = i;
+            }
+
+            var movie = await context.Movies.Include(movie => movie.ActorsMovies)
+                .FirstOrDefaultAsync(movie => movie.Id == id);
+
+            if (movie is null)
+            {
+                throw new ArgumentException($"There is no movie with id {id}");
+            }
+
+            movie.ActorsMovies = mapper.Map(actors, movie.ActorsMovies);
+
+            await context.SaveChangesAsync();
+
+        }
     }
 }
