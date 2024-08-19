@@ -17,6 +17,10 @@ namespace MovieLibrary.Repositories
         {
             return await context.Movies.AsNoTracking()
                 .Include(movie => movie.Comments)
+                .Include(movie => movie.GenresMovies)
+                    .ThenInclude(genre => genre.Genre)
+                .Include(movie => movie.ActorsMovies)
+                    .ThenInclude(actor => actor.Actor)
                 .FirstOrDefaultAsync(movie => movie.Id == id);
         }
 
