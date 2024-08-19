@@ -19,7 +19,7 @@ namespace MovieLibrary.Repositories
                 .Include(movie => movie.Comments)
                 .Include(movie => movie.GenresMovies)
                     .ThenInclude(genre => genre.Genre)
-                .Include(movie => movie.ActorsMovies)
+                .Include(movie => movie.ActorsMovies.OrderBy(am => am.Order))
                     .ThenInclude(actor => actor.Actor)
                 .FirstOrDefaultAsync(movie => movie.Id == id);
         }
