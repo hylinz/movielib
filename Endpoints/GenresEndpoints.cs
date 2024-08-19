@@ -69,8 +69,16 @@ namespace MovieLibrary.Endpoints
         }
 
 
-        static async Task<Results<NoContent, NotFound>> UpdateGenre(int id, CreateGenreDTO createGenreDTO, IGenresRepository repository, IOutputCacheStore outputCacheStore, IMapper mapper)
+        static async Task<Results<NoContent, NotFound, ValidationProblem>> UpdateGenre
+            (int id, CreateGenreDTO createGenreDTO, IGenresRepository repository, IOutputCacheStore outputCacheStore, IMapper mapper, IValidator<CreateGenreDTO> validator)
         {
+
+            var validationResult = await validator.ValidateAsync(createGenreDTO);
+            if (!validationResult.IsValid)
+            {
+                return TypedResults.ValidationProblem(validationResult.ToDictionary());
+
+            }
 
             var exists = await repository.Exists(id);
             if (!exists)

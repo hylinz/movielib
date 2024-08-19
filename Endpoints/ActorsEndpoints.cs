@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MovieLibrary.Services;
 using MovieLibrary.Migrations;
+using FluentValidation;
 
 namespace MovieLibrary.Endpoints
 {
@@ -54,8 +55,15 @@ namespace MovieLibrary.Endpoints
             return TypedResults.Ok(actorDTO);
         }
 
-        static async Task<Created<ActorDTO>> Create([FromForm] CreateActorDTO createActorDTO, IActorsRepository repository, IOutputCacheStore outputCacheStore, IMapper mapper, IFileStorage fileStorage)
+        static async Task<Results<ValidationProblem, Created<ActorDTO>>> Create
+            ([FromForm] CreateActorDTO createActorDTO, IActorsRepository repository, IOutputCacheStore outputCacheStore, IMapper mapper, IFileStorage fileStorage, IValidator<CreateActorDTO> validator)
         {
+            var validationResults = await validator.ValidateAsync(createActorDTO);
+            if (!validationResults.IsValid)
+            {
+                return TypedResults.ValidationProblem(validationResults.ToDictionary());
+            }
+            
             var actor = mapper.Map<Actor>(createActorDTO);
 
             if (createActorDTO.Picture is not null)

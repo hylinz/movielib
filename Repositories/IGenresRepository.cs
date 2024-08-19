@@ -11,5 +11,6 @@ namespace MovieLibrary.Repositories
         Task Update(Genre genre);
         Task Delete(int id);
         Task<List<int>> Exists(List<int> ids);
+        Task<bool> Exists(int id, string name);
     }
 }
