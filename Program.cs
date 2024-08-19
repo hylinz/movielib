@@ -3,6 +3,7 @@ using MovieLibrary.Repositories;
 using Microsoft.EntityFrameworkCore;
 using MovieLibrary.Endpoints;
 using MovieLibrary.Services;
+using FluentValidation;
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -37,6 +38,8 @@ builder.Services.AddTransient<IFileStorage, AzureFileStorage>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAutoMapper(typeof(Program));
+
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 //
 
 // Create App

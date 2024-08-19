@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.ComponentModel.DataAnnotations;
+using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.OutputCaching;
 using MovieLibrary.DTOs;
@@ -46,8 +48,15 @@ namespace MovieLibrary.Endpoints
             return TypedResults.Ok(genreDTO);
         }
 
-        static async Task<Created<GenreDTO>> CreateGenre(CreateGenreDTO createGenreDTO, IGenresRepository repository, IOutputCacheStore outputCacheStore, IMapper mapper)
+        static async Task<Results<Created<GenreDTO>, ValidationProblem>> CreateGenre
+            (CreateGenreDTO createGenreDTO, IGenresRepository repository, IOutputCacheStore outputCacheStore, IMapper mapper, IValidator<CreateGenreDTO> validator)
         {
+            var validationResult = await validator.ValidateAsync(createGenreDTO);
+            if (!validationResult.IsValid)
+            {
+                return TypedResults.ValidationProblem(validationResult.ToDictionary());
+
+            }
             var genre = mapper.Map<Genre>(createGenreDTO);
 
             var id = await repository.Create(genre);
