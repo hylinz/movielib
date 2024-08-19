@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using MovieLibrary.DTOs;
 using MovieLibrary.Entities;
 
 namespace MovieLibrary.Repositories
 {
-    public class MoviesRepository(IHttpContextAccessor httpContextAccessor, ApplicationDbContext context) : IMoviesRepository
+    public class MoviesRepository(IHttpContextAccessor httpContextAccessor, ApplicationDbContext context, IMapper mapper) : IMoviesRepository
     {
         public async Task<List<Movie>> GetAll(PaginationDTO pagination)
         {
@@ -38,6 +39,23 @@ namespace MovieLibrary.Repositories
         public async Task Delete(int id)
         {
             await context.Movies.Where(movie => movie.Id == id).ExecuteDeleteAsync();
+        }
+
+        public async Task Assign(int id, List<int> genresIds)
+        {
+            var movie = await context.Movies.Include(movie => movie.GenresMovies).FirstOrDefaultAsync(movie => movie.Id == id);
+
+            if (movie is null)
+            {
+                throw new ArgumentException($"No movie found with id: {id}");
+            }
+
+            var genresMovies = genresIds.Select(genresId => new GenreMovie { GenreId = genresId });
+
+            movie.GenresMovies = mapper.Map(genresMovies, movie.GenresMovies);
+
+            await context.SaveChangesAsync();
+
         }
     }
 }

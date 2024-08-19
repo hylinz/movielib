@@ -29,6 +29,11 @@ namespace MovieLibrary.Repositories
             return await context.Genres.AnyAsync(genre => genre.Id == id);
         }
 
+        public async Task<List<int>> Exists(List<int> ids)
+        {
+            return await context.Genres.Where(genre => ids.Contains(genre.Id)).Select(genre => genre.Id).ToListAsync();
+        }
+
         public async Task<List<Genre>> GetAll()
         {
             return await context.Genres.OrderBy(genre => genre.Name).ToListAsync();
