@@ -1,29 +1,39 @@
 ﻿{
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:41630",
-      "sslPort": 44374
-    }
-  },
-  "profiles": {
-    "Api_Example": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchUrl": "swagger",
-      "launchBrowser": true,
-      "applicationUrl": "https://localhost:7155;http://localhost:5135",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+    "$schema":  "https://json.schemastore.org/launchsettings.json",
+    "iisSettings": {
+        "windowsAuthentication": false,
+        "anonymousAuthentication": true,
+        "iisExpress": {
+            "applicationUrl": "http://localhost:41630",
+            "sslPort": 44374
+        }
     },
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+    "profiles": {
+        "https": {
+            "commandName": "Project",
+            "dotnetRunMessages": true,
+            "launchBrowser": true,
+            "launchUrl": "swagger",
+            "applicationUrl": "https://localhost:7155;http://localhost:5135",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "http": {
+                "commandName": "Project",
+                "dotnetRunMessages": true,
+                "launchUrl": "swagger",
+                "launchBrowser": true,
+                "applicationUrl": "https://localhost:7155;http://localhost:5135",
+                "environmentVariables": {
+                    "ASPNETCORE_ENVIRONMENT": "Development"
+                }
+            },
+            "IIS Express": {
+                "commandName": "IISExpress",
+                "launchBrowser": true,
+                "environmentVariables": {
+                    "ASPNETCORE_ENVIRONMENT": "Development"
+                }
+            }
+        }
     }
-  }
-}

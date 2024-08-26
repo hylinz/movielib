@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using MovieLibrary.Endpoints;
 using MovieLibrary.Services;
 using FluentValidation;
+using Microsoft.AspNetCore.Diagnostics;
+using MovieLibrary.Entities;
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -33,6 +35,7 @@ builder.Services.AddScoped<IGenresRepository, GenresRepository>();
 builder.Services.AddScoped<IActorsRepository, ActorsRepository>();
 builder.Services.AddScoped<IMoviesRepository, MoviesRepository>();
 builder.Services.AddScoped<ICommentsRepository, CommentsRepository>();
+builder.Services.AddScoped<IErrorsRepository, ErrorsRepository>();
 
 builder.Services.AddTransient<IFileStorage, AzureFileStorage>();
 builder.Services.AddHttpContextAccessor();
@@ -40,6 +43,9 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
+builder.Services.AddProblemDetails();
+
 //
 
 // Create App
@@ -53,7 +59,31 @@ if (builder.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseExceptionHandler(exceptionHandlerApp => exceptionHandlerApp.Run(async context =>
+{
 
+    var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
+    var exception = exceptionHandlerFeature?.Error!;
+    var error = new Error();
+
+    error.Date = DateTime.UtcNow;
+    error.Message = exception.Message;
+    error.StackTrace = exception.StackTrace;
+
+    var repository = context.RequestServices.GetRequiredService<IErrorsRepository>();
+
+    await repository.Create(error);
+ 
+    await Results
+    .BadRequest(new 
+    { 
+        type = "Error", 
+        message = "An unexpected exception was encountered", 
+        status = 500 
+    })
+    .ExecuteAsync(context);
+}));
+app.UseStatusCodePages();
 app.UseCors();
 app.UseOutputCache();
 ///////////////////

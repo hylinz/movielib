@@ -4,6 +4,7 @@ using MovieLibrary.Entities;
 using Microsoft.AspNetCore.OutputCaching;
 using MovieLibrary.DTOs;
 using MovieLibrary.Repositories;
+using MovieLibrary.Filters;
 
 namespace MovieLibrary.Endpoints
 {
@@ -11,10 +12,10 @@ namespace MovieLibrary.Endpoints
     {
         public static RouteGroupBuilder MapComments(this RouteGroupBuilder group)
         {
-            group.MapPost("/", Create);
+            group.MapPost("/", Create).AddEndpointFilter<ValidationFilter<CreateCommentDTO>>();
             group.MapGet("/", GetAll).CacheOutput(c => c.Expire(TimeSpan.FromSeconds(15)).Tag("comments-get"));
             group.MapGet("/{id:int}", GetById).CacheOutput(c => c.Expire(TimeSpan.FromSeconds(15)).Tag("comments-get"));
-            group.MapPut("/{id:int}", Update);
+            group.MapPut("/{id:int}", Update).AddEndpointFilter<ValidationFilter<CreateCommentDTO>>();
             group.MapDelete("/{id:int}", Delete);
 
 
