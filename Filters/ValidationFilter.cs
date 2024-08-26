@@ -1,21 +1,20 @@
 ﻿
 using FluentValidation;
-using MovieLibrary.DTOs;
 
 namespace MovieLibrary.Filters
 {
-    public class GenresValidationFilter : IEndpointFilter
+    public class ValidationFilter<T> : IEndpointFilter
     {
         public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
         {
-            var validator = context.HttpContext.RequestServices.GetService<IValidator<CreateGenreDTO>>();
+            var validator = context.HttpContext.RequestServices.GetService<IValidator<T>>();
 
-            if (validator is null) 
+            if (validator is null)
             {
                 return await next(context);
             }
 
-            var obj = context.Arguments.OfType<CreateGenreDTO>().FirstOrDefault();
+            var obj = context.Arguments.OfType<T>().FirstOrDefault();
 
             if (obj is null)
             {

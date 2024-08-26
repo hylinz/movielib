@@ -19,8 +19,8 @@ namespace MovieLibrary.Endpoints
         {
         group.MapGet("/", GetGenres).CacheOutput(c => c.Expire(TimeSpan.FromSeconds(15)).Tag("genres-get"));
             group.MapGet("/{id:int}", GetById);
-        group.MapPost("/", CreateGenre).AddEndpointFilter<GenresValidationFilter>();
-        group.MapPut("/{id:int}", UpdateGenre).AddEndpointFilter<GenresValidationFilter>();
+        group.MapPost("/", CreateGenre).AddEndpointFilter<ValidationFilter<CreateGenreDTO>>();
+        group.MapPut("/{id:int}", UpdateGenre).AddEndpointFilter<ValidationFilter<CreateGenreDTO>>();
         group.MapDelete("/{id:int}", DeleteGenre);
 
             return group;
